@@ -58,7 +58,7 @@ int main()
 	__cilkrts_set_param("nworkers", "4");
 
 	long i;
-	const long mass_size = 100000;
+	const long mass_size = 500000;
 	int *mass_begin, *mass_end;
 	int *mass = new int[mass_size];
 
