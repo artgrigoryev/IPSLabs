@@ -50,6 +50,40 @@ void ParallelSort(int *begin, int *end)
 	}
 }
 
+
+void CompareForAndCilk_For(size_t& size)
+{
+	std::vector<int> vec;
+	cilk::reducer<cilk::op_vector<int>>red_vec;
+
+	printf("Number of elements is %d\n", size);
+
+	high_resolution_clock::time_point t1_for = high_resolution_clock::now();
+
+	for (size_t i = 0; i < size; ++i)
+	{
+		vec.push_back(rand() % 200000 + 1);
+	}
+
+	high_resolution_clock::time_point t2_for = high_resolution_clock::now();
+	duration<double> duration_for = (t2_for - t1_for);
+	printf("\tElapsed time for cycle FOR is: %lf seconds\n", duration_for.count());
+
+	vec.clear();
+	vec.shrink_to_fit();
+
+	high_resolution_clock::time_point t1_cilk_for = high_resolution_clock::now();
+
+	cilk_for(size_t k = 0; k < size; ++k)
+	{
+		red_vec->push_back(rand() % 200000 + 1);
+	}
+
+	high_resolution_clock::time_point t2_cilk_for = high_resolution_clock::now();
+	duration<double> duration_cilk_for = (t2_cilk_for - t1_cilk_for);
+	printf("\tElapsed time for cycle CILK_FOR is: %lf seconds\n\n", duration_cilk_for.count());
+}
+
 int main()
 {
 	srand((unsigned)time(0));
@@ -57,6 +91,7 @@ int main()
 	// устанавливаем количество работающих потоков = 4
 	__cilkrts_set_param("nworkers", "4");
 
+/*
 	long i;
 	const long mass_size = 1000000;
 	int *mass_begin, *mass_end;
@@ -89,5 +124,14 @@ int main()
 	ReducerMinTest(mass, mass_size);
 
 	delete[]mass;
+*/
+
+	size_t numbers[8] = { 1000000, 100000, 10000, 1000, 500, 100, 50, 10 };
+
+	for (int j = 0; j < 8; ++j)
+	{
+		CompareForAndCilk_For(numbers[j]);
+	}
+	
 	return 0;
 }
