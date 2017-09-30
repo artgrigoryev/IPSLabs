@@ -22,6 +22,18 @@ void ReducerMaxTest(int *mass_pointer, const long size)
 		maximum->get_reference(), maximum->get_index_reference());
 }
 
+void ReducerMinTest(int *mass_pointer, const long size)
+{
+	cilk::reducer<cilk::op_min_index<long, int>> minimum;
+	cilk_for(long i = 0; i < size; ++i)
+	{
+		minimum->calc_min(i, mass_pointer[i]);
+	}
+	printf("Minimal element = %d has index = %d\n\n",
+		minimum->get_reference(), minimum->get_index_reference());
+}
+
+
 /// Функция ParallelSort() сортирует массив в порядке возрастания
 /// begin - указатель на первый элемент исходного массива
 /// end - указатель на последний элемент исходного массива
@@ -57,10 +69,15 @@ int main()
 
 	mass_begin = mass;
 	mass_end = mass_begin + mass_size;
+
+	printf("Before ParallelSort()\n");
 	ReducerMaxTest(mass, mass_size);
+	ReducerMinTest(mass, mass_size);
 
 	ParallelSort(mass_begin, mass_end);
+	printf("After ParallelSort()\n");
 	ReducerMaxTest(mass, mass_size);
+	ReducerMinTest(mass, mass_size);
 
 	delete[]mass;
 	return 0;
