@@ -18,7 +18,7 @@ void ReducerMaxTest(int *mass_pointer, const long size)
 	{
 		maximum->calc_max(i, mass_pointer[i]);
 	}
-	printf("Maximal element = %d has index = %d\n\n",
+	printf("\tMaximal element = %d has index = %d\n",
 		maximum->get_reference(), maximum->get_index_reference());
 }
 
@@ -29,7 +29,7 @@ void ReducerMinTest(int *mass_pointer, const long size)
 	{
 		minimum->calc_min(i, mass_pointer[i]);
 	}
-	printf("Minimal element = %d has index = %d\n\n",
+	printf("\tMinimal element = %d has index = %d\n",
 		minimum->get_reference(), minimum->get_index_reference());
 }
 
@@ -70,12 +70,21 @@ int main()
 	mass_begin = mass;
 	mass_end = mass_begin + mass_size;
 
+	printf("Number of element in massive is %d\n", mass_size);
+
 	printf("Before ParallelSort()\n");
 	ReducerMaxTest(mass, mass_size);
 	ReducerMinTest(mass, mass_size);
 
+	// timing ParallelSort()
+	high_resolution_clock::time_point t1 = high_resolution_clock::now();
 	ParallelSort(mass_begin, mass_end);
-	printf("After ParallelSort()\n");
+	high_resolution_clock::time_point t2 = high_resolution_clock::now();
+	duration<double> duration = (t2 - t1);
+
+	printf("\nElapsed time for sorting is: %lf seconds\n", duration.count());
+	
+	printf("\nAfter ParallelSort()\n");
 	ReducerMaxTest(mass, mass_size);
 	ReducerMinTest(mass, mass_size);
 
